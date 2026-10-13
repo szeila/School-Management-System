@@ -1,0 +1,8 @@
+<?php
+session_start(); require 'logcheck.php'; require 'includes/conn.php';
+$stats=[];
+foreach (['Students'=>'studenttbl','Subjects'=>'subjecttbl','Enrollment submissions'=>'student_subject'] as $label=>$table) {
+    $stats[$label]=(int)$conn->query("SELECT COUNT(*) AS n FROM $table")->fetch_assoc()['n'];
+}
+$records=$conn->query('SELECT studnum, fname, lname, course, yearlvl FROM studenttbl ORDER BY ID DESC');
+?><!doctype html><html><head><meta charset="utf-8"><title>School Report</title><style>body{font:16px Arial;margin:32px;color:#222}table{border-collapse:collapse;width:100%}td,th{padding:9px;border:1px solid #ccc;text-align:left}@media print{.actions{display:none}}</style></head><body><div class="actions"><a href="adminindex.php">Back to dashboard</a> · <button onclick="window.print()">Print report</button></div><h1>School Enrollment Report</h1><p><?php echo htmlspecialchars(date('Y-m-d')); ?></p><?php foreach($stats as $k=>$v): ?><p><strong><?php echo htmlspecialchars($k); ?>:</strong> <?php echo $v; ?></p><?php endforeach; ?><h2>Registered Students</h2><table><thead><tr><th>Student number</th><th>Name</th><th>Course</th><th>Year / Section</th></tr></thead><tbody><?php while($s=$records->fetch_assoc()): ?><tr><?php foreach(['studnum','fname','lname','course','yearlvl'] as $f) { if($f==='fname') {echo '<td>'.htmlspecialchars(trim($s['fname'].' '.$s['lname']),ENT_QUOTES,'UTF-8').'</td>';continue;} if($f==='lname')continue; echo '<td>'.htmlspecialchars((string)$s[$f],ENT_QUOTES,'UTF-8').'</td>'; } ?></tr><?php endwhile; ?></tbody></table></body></html>

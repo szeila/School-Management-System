@@ -1,0 +1,10 @@
+School System PHP 8 compatibility package
+
+INSTALL: Back up the current School_System folder and online_enroll database. Extract Online_enroll_for_sharing contents to C:\xampp\htdocs\School_System. Keep the original database online_enroll. Update host/user/password/port in Admin/includes/conn.php, student/includes/conn.php and root conn.php if yours differ.
+
+FIXES: Existing mysql_* query calls supported via mysqli transitional shim; stronger admin/student role checks; working admin student/subject lists, create actions, POST-only delete actions with CSRF; working admin report link; fixed student curriculum navigation; admin report no longer references unrelated nurse tables; login uses password_verify when hashes exist, while still accepting legacy passwords; account creation uses transaction and insert_id.
+
+LIMITATIONS: We cannot run your XAMPP instance or test browser interactions against your live database. Legacy user passwords are still stored in plaintext, because the old password VARCHAR(11) schema cannot fit secure hashes. See migration advice: ALTER TABLE usertbl MODIFY password VARCHAR(255) NOT NULL; then update creation/change/admin edit endpoints to hash passwords before use. DO NOT deploy this transitional build publicly. Some old informational links (#) and unimplemented section/schedule functionality remain. Verify compatibility against a BACKUP database and do not use real student data.
+
+TEST CHECKLIST (run with a COPY of the database): admin login, Home, Manage Users, Add Account, delete student, edit admin, Manage Subjects, Add Subject, delete subject, Generate Report, logout; student login, Home, Profile, Change Password, Enroll Now, choose subjects, preview, submit, logout.
+The homepage's old marketing/news '#' links do not have destinations; they remain decorative. addnewsection.php and addnewsched.php retain the original subject-creation behavior, since those legacy pages contain copied subject forms, not a working section/schedule workflow. This is a compatibility repair, not a verified full modernization.
